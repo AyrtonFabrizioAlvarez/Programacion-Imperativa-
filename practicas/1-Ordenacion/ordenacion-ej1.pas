@@ -28,6 +28,8 @@ begin
 	if (V.codigo <> 0) then
 	begin
 		writeln('Ingrese la cantidad vendida bajo el codigo ', V.codigo);
+		writeln('');
+		writeln('');
 		read(V.cantVendida);
 	end;
 end;
