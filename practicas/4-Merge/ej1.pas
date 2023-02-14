@@ -121,7 +121,7 @@ procedure merge (V:vector ; var L:lista);
 		for i:= 1 to dimF do
 		begin
 			if (V[i] <> nil) then
-				if (V[i]^.dato.isbn < min.isbn) then
+				if (V[i]^.dato.isbn <= min.isbn) then
 				begin
 					pos:= i;
 					min:= V[i]^.dato; 
