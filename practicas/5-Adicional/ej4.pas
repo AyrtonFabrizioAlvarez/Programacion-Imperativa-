@@ -6,8 +6,8 @@ type
 	entrada = record
 		dia:integer;
 		codigo:integer;
-		asiento:integer;
 		monto:integer;
+		asiento:integer;
 	end;
 	
 	lista = ^nodo;
@@ -16,11 +16,22 @@ type
 		sig:lista;
 	end;
 	
-	vectorListas = array [1..dimF] of lista;
+	entradasTotales = record
+		codigo:integer;
+		entradas:integer;
+	end;
 	
-procedure cargarVectorListas(var V:vectorListas);
+	lista2 = ^nodo2;
+	nodo2 = record
+		dato:entradasTotales;
+		sig:lista2;
+	end;
+	
+	vector = array [1..7] of lista;
 
-	procedure iniciarVectorListas(var V:vectorListas);
+procedure cargarVectorListas(var V:vector);
+
+	procedure iniciarVectorListas(var V:vector);
 	var
 		i:integer;
 	begin
@@ -30,26 +41,27 @@ procedure cargarVectorListas(var V:vectorListas);
 
 	procedure leerEntrada(var E:entrada);
 	begin
-		writeln('Ingrese el codigo de Obra');
+		writeln('Ingrese el codigo de entrada');
 		readln(E.codigo);
 		if (E.codigo <> 0) then
 		begin
 			writeln('Ingrese el dia de la entrada');
 			readln(E.dia);
-			//writeln('Ingrese el numero de asiento');
-			E.asiento:= random(101);
 			//writeln('Ingrese el monto de la entrada');
-			E.monto:= random(11);
+			E.monto:= random(1001);
+			//writeln('Ingrese el asiento de la entrada');
+			E.asiento:= random(101);
 		end;
 	end;
-	
+
 	procedure insertarOrdenado(var L:lista ; E:entrada);
 	var
 		nuevo, anterior, actual:lista;
 	begin
 		new(nuevo);
 		nuevo^.dato:= E;
-		anterior:= L; actual:= L;
+		anterior:= L;
+		actual:= L;
 		while (actual <> nil) and (actual^.dato.codigo < E.codigo) do
 		begin
 			anterior:= actual;
@@ -59,7 +71,7 @@ procedure cargarVectorListas(var V:vectorListas);
 			L:= nuevo
 		else
 			anterior^.sig:= nuevo;
-		nuevo^.sig:= actual;
+		nuevo^.sig:= actual
 	end;
 
 var
@@ -74,53 +86,31 @@ begin
 	end;
 end;
 
-procedure mostrarVectorListas(V:vectorListas);
 
-	procedure mostrarLista(L:lista);
-	begin
-		if (L <> nil) then
-		begin
-			writeln('Codigo: ', L^.dato.codigo, ' Monto: ', L^.dato.monto);
-			mostrarLista(L^.sig);
-		end;
-	end;
+procedure mergeAcumulador(V:vector ; var L:lista2);
 
-var
-	i:integer;
-begin
-	for i:=1 to dimF do
-	begin
-		writeln('DIA: ', i);
-		mostrarLista(V[i]);
-	end;
-end;
-
-procedure mergeAcumulador (V:vectorListas ; var L:lista);
-
-	procedure minimo(var V:vectorListas ; var min:entrada);
+	procedure minimo(var V:vector ; var min:entrada);
 	var
-		pos, i:integer;
+		i, pos:integer;
 	begin
 		min.codigo:= 999;
 		pos:= -1;
-		for i:=1 to dimF do
+		for i:= 1 to dimF do
 		begin
-			if (V[i] <> nil) then
-			begin
-				if (V[i]^.dato.codigo <= min.codigo) then
+			 if (V[i] <> nil) then
+				if (V[i]^.dato.codigo < min.codigo) then
 				begin
 					pos:= i;
 					min:= V[i]^.dato;
 				end;
-			end;
 		end;
 		if (pos <> -1) then
-			v[pos]:= v[pos]^.sig
+			V[pos]:= V[pos]^.sig;
 	end;
 	
-	procedure agregarAtras(var L, ultimo:lista ; E:entrada);
+	procedure agregarAtras(var L, ultimo:lista2 ; E:entradasTotales);
 	var
-		nuevo:lista;
+		nuevo:lista2;
 	begin
 		new(nuevo);
 		nuevo^.dato:= E;
@@ -129,43 +119,45 @@ procedure mergeAcumulador (V:vectorListas ; var L:lista);
 			L:= nuevo
 		else
 			ultimo^.sig:= nuevo;
-		ultimo:= nuevo;
+		ultimo:= nuevo
 	end;
 
 var
-	min, actual:entrada;
-	ultimo:lista;
+	actual:entradasTotales;
+	min:entrada;
+	ultimo:lista2;
 begin
+	L:= nil;
 	minimo(V, min);
 	while (min.codigo <> 999) do
 	begin
-		actual:= min;
-		actual.monto:= 0;
+		actual.codigo:= min.codigo;
+		actual.entradas:= 0;
 		while (actual.codigo = min.codigo) do
 		begin
-			actual.monto:= actual.monto + min.monto;
+			actual.entradas:= actual.entradas + 1;
 			minimo(V, min);
 		end;
 		agregarAtras(L, ultimo, actual);
 	end;
 end;
 
-procedure mostrarLista(L:lista);
+
+procedure mostrarListaRecursiva(L:lista2);
 begin
 	if (L <> nil) then
 	begin
-		writeln('Codigo: ', L^.dato.codigo, ' Monto Total: ', L^.dato.monto);
-		mostrarLista(L^.sig);
+		writeln('Para la obra con codigo ', L^.dato.codigo, ' se vendieron ', L^.dato.entradas, ' entradas');
+		mostrarListaRecursiva(L^.sig);
 	end;
 end;
 
 
-var
-	V:vectorListas;
-	L:lista;
+VAR
+	V:vector;
+	L:lista2;
 BEGIN
 	cargarVectorListas(V);
-	mostrarVectorListas(V);
 	mergeAcumulador(V, L);
-	mostrarLista(L);
+	mostrarListaRecursiva(L);
 END.

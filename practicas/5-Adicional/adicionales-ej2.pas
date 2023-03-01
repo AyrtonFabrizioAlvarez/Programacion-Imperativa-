@@ -91,25 +91,22 @@ end;
 
 procedure cargarVectorListas (A: arbol ; var arr: arrListas);
 
-	procedure agregarAtras(var L: lista ; var ultimo: lista ; au: auto);
+	procedure agregarAdelante(var L: lista ; au: auto);
 	var
 		nuevo: lista;
 	begin
 		new(nuevo);
 		nuevo^.dato:= au;
-		nuevo^.sig:= nil;
-		if (L = nil) then
-			L:= nuevo
-		else
-			ultimo^.sig:= nuevo;
-		ultimo:= nuevo;
+		nuevo^.sig:= L;
+		L:= nuevo;
+		
 	end;
-var
-	ultimo: lista;
+
+
 begin
 	if (A <> nil) then
 	begin
-		agregarAtras(arr[A^.dato.modelo], ultimo, A^.dato);
+		agregarAdelante(arr[A^.dato.modelo], A^.dato);
 		cargarVectorListas(A^.HI, arr);
 		cargarVectorListas(A^.HD, arr);
 	end;

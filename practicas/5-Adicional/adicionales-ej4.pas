@@ -127,17 +127,18 @@ var
  actual: entrada2;
  ultimo: lista2;
 begin
+	L:= nil;
 	minimo(arr, min);
-	actual.codigo:= min.codigo;
 	while (min.codigo <> 9999) do
 	begin
+		actual.codigo:= min.codigo;
 		actual.entradas:= 0;
 		while (actual.codigo = min.codigo) do
 		begin
 			actual.entradas:= actual.entradas + 1;
 			minimo(arr, min);
 		end;
-		agregarAtras(L, ultimo, actual)
+		agregarAtras(L, ultimo, actual);
 	end;
 end;
 

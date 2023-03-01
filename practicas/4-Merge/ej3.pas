@@ -108,7 +108,7 @@ procedure mergeAcumulador(V:vectorListas ; var L:lista);
 		for i:=1 to dimF do
 		begin
 			if (V[i] <> nil) then
-				if (V[i]^.dato.codProducto < min.codProducto) then
+				if (V[i]^.dato.codProducto <= min.codProducto) then
 				begin
 					min:= V[i]^.dato;
 					pos:= i
